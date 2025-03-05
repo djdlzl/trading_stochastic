@@ -1,0 +1,11 @@
+schedule==1.2.2
+holidays
+apscheduler
+python-dotenv
+websockets
+nest-asyncio==1.6.0
+slack_sdk
+requests
+mysql-connector-python==8.0.33
+pykrx
+python-dateutil
