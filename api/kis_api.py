@@ -29,6 +29,12 @@ class KISApi:
         """
         return self.market_data.get_upAndDown_rank()
 
+    def get_volume_rank(self):
+        """
+        거래량 상위 종목 정보를 반환합니다.
+        """
+        return self.market_data.get_volume_rank()
+
     def get_stock_volume(self, ticker, days=3):
         """
         지정 종목의 최근 n일간 거래량을 반환합니다.

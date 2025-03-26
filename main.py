@@ -1,10 +1,12 @@
 # main.py
 from process.main_process import MainProcess
+from process.test_process import TestProcess
 import datetime
 import time
 
 if __name__ == "__main__":
     main_process = MainProcess()
+
     print("초기화 완료")
     main_process.start_all()
     start_time = datetime.datetime.now().strftime('%y%m%d - %X')

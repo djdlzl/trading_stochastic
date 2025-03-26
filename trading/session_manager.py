@@ -10,7 +10,7 @@ from api.kis_api import KISApi
 from api.kis_websocket import KISWebSocket
 from config.condition import DAYS_LATER, COUNT, SELL_WAIT
 
-class TradingSessionManager:
+class SessionManager:
     def __init__(self, kis_api=None, slack_logger=None, date_utils=None):
         # 의존성 주입: 외부에서 인스턴스를 전달하거나 기본값 사용
         self.kis_api = kis_api if kis_api else KISApi(is_mock=True)

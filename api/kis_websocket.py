@@ -193,6 +193,15 @@ class KISWebSocket:
                 continue
         return False
 
+    async def buy_condition(self, ticker, current_price):
+        # 예: 거래량 급등 + 5% 이상 상승 시 매수
+        volumes = self.market_data.get_stock_volume(ticker)
+        diff_1_2, _ = self.market_data.compare_volumes(volumes)
+        if diff_1_2 > 50 and current_price > (initial_price * 1.05):
+            # callback으로 매수 주문
+            return True
+        return False
+
     async def sell_condition(self, recvvalue, session_id, ticker, name, quantity, avr_price, target_date):
         """
         매도 조건을 평가하고 조건이 충족되면 매도 주문을 실행합니다.
@@ -265,7 +274,9 @@ class KISWebSocket:
 
     async def _message_receiver(self):
         """웹소켓 메시지 수신을 전담하는 코루틴"""
-        while True:
+        retry_count = 0
+        max_retries = 5
+        while retry_count < max_retries:
             try:
                 if not self.is_connected:
                     try:
@@ -289,17 +300,20 @@ class KISWebSocket:
                     ticker = recvvalue[0].split('|')[-1]
                     if ticker in self.subscribed_tickers:
                         await self.ticker_queues[ticker].put(recvvalue)
+                retry_count = 0  # 성공 시 초기화
             except ConnectionClosed:
+                retry_count += 1
                 logging.error("WebSocket connection closed. Reconnecting...")
                 self.is_connected = False
                 self.websocket = None
-                await asyncio.sleep(1)
+                await asyncio.sleep(2 ** retry_count)  # 지수 백오프
                 continue
             except Exception as e:
+                retry_count += 1
                 logging.error("Receiver error: %s", e)
                 self.is_connected = False
                 self.websocket = None
-                await asyncio.sleep(1)
+                await asyncio.sleep(2 ** retry_count)  # 지수 백오프
                 continue
 
     async def real_time_monitoring(self, sessions_info):

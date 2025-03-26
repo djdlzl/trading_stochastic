@@ -28,7 +28,7 @@ class KISMarketData:
             "FID_COND_MRKT_DIV_CODE": "J",
             "FID_INPUT_ISCD": ticker
         }
-        response = requests.get(url=url, params=params, headers=self.headers, timeout=10)
+        response = requests.get(url=url, params=params, headers=self.auth.headers, timeout=10)
         json_response = response.json()
         # print(json.dumps(json_response,indent=2))
 
@@ -55,11 +55,12 @@ class KISMarketData:
             "FID_INPUT_PRICE_2": "",
             "FID_VOL_CNT": ""
         }
-        self._get_hashkey(body, is_mock=False)
-        self.auth._set_headers(is_mock=False, tr_id="FHKST130000C0")
-        self.headers["hashkey"] = self.hashkey
         
-        response = requests.get(url=url, headers=self.headers, params=body, timeout=10)
+        self.auth._get_hashkey(body, is_mock=False)
+        self.auth._set_headers(is_mock=False, tr_id="FHKST130000C0")
+        self.auth.headers["hashkey"] = self.auth.hashkey
+        
+        response = requests.get(url=url, headers=self.auth.headers, params=body, timeout=10)
         
         upper_limit_stocks = response.json()
         return upper_limit_stocks
@@ -86,17 +87,16 @@ class KISMarketData:
             "fid_trgt_cls_code":"0",
             "fid_trgt_exls_cls_code":"0",
             "fid_div_cls_code":"0",
-            "fid_rsfl_rate1":"18",
-            "fid_rsfl_rate2":"29.5",
-            "fid_input_date_1": "20240314",
-            "fid_input_date_2": "20241124"
+            "fid_rsfl_rate1":"5",
+            "fid_rsfl_rate2":"15",
+
         }
         
-        self._get_hashkey(body, is_mock=False)
+        self.auth._get_hashkey(body, is_mock=False)
         self.auth._set_headers(is_mock=False, tr_id="FHPST01700000")
-        self.headers["hashkey"] = self.hashkey
+        self.auth.headers["hashkey"] = self.auth.hashkey
         
-        response = requests.get(url=url, headers=self.headers, params=body, timeout=10)
+        response = requests.get(url=url, headers=self.auth.headers, params=body, timeout=10)
         
         updown = response.json()
         # print('상승 종목: ',json.dumps(updown, indent=2, ensure_ascii=False))
@@ -153,7 +153,7 @@ class KISMarketData:
             "FID_INPUT_DATE_1": ""
         }
 
-        response = requests.get(url=url, params=body, headers=self.headers, timeout=10)
+        response = requests.get(url=url, params=body, headers=self.auth.headers, timeout=10)
         response.raise_for_status()
         response_json = response.json()
         # print(json.dumps(response_json, indent=2, ensure_ascii=False))
@@ -186,10 +186,10 @@ class KISMarketData:
             # "ST_DATE": start_date,
             # "END_DATE": end_date
         }
-        self._get_hashkey(body, is_mock=False)
+        self.auth._get_hashkey(body, is_mock=False)
         self.auth._set_headers(is_mock=False, tr_id="FHKST01010400")
         
-        response = requests.get(url=url, params=body, headers=self.headers, timeout=10)
+        response = requests.get(url=url, params=body, headers=self.auth.headers, timeout=10)
         json_response = response.json()
         
         # print(json.dumps(json_response, indent=2, e_ascii=False))
@@ -198,6 +198,7 @@ class KISMarketData:
         for item in json_response.get('output', []):
             volumes.append(int(item.get('acml_vol', '0')))
         
+        # return volumes  # 최근 n일간의 거래량만 반환
         return volumes[:days]  # 최근 n일간의 거래량만 반환
     
     def compare_volumes(self, volumes):
@@ -228,11 +229,11 @@ class KISMarketData:
             "PDNO": ticker
         }
 
-        self._get_hashkey(body, is_mock=False)
+        self.auth._get_hashkey(body, is_mock=False)
         self.auth._set_headers(is_mock=False, tr_id="CTPF1002R")
-        self.headers["hashkey"] = self.hashkey
+        self.auth.headers["hashkey"] = self.auth.hashkey
 
-        response = requests.get(url=url, params=body, headers=self.headers, timeout=10)
+        response = requests.get(url=url, params=body, headers=self.auth.headers, timeout=10)
         response.raise_for_status()
         response_json = response.json()
         # print(json.dumps(response_json, indent=2, ensure_ascii=False))
