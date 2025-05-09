@@ -5,7 +5,7 @@ from apscheduler.triggers.cron import CronTrigger
 from apscheduler.executors.pool import ThreadPoolExecutor
 from config.condition import GET_ULS_HOUR, GET_ULS_MINUTE, GET_SELECT_HOUR, GET_SELECT_MINUTE, ORDER_HOUR_1, ORDER_MINUTE_1, ORDER_HOUR_2, ORDER_MINUTE_2
 from trading.trading_logic import TradingLogic
-from trading.session_manager import TradingSessionManager
+from trading.session_manager import SessionManager
 
 class SchedulerManager:
     def __init__(self):
@@ -14,7 +14,7 @@ class SchedulerManager:
 
     def add_jobs(self):
         trading_logic = TradingLogic()
-        trading_session_manager = TradingSessionManager()
+        trading_session_manager = SessionManager()
 
         self.scheduler.add_job(
             trading_logic.fetch_and_save_previous_upper_limit_stocks,
